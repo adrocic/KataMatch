@@ -1,17 +1,16 @@
-import fetch from 'fetch'
+import axios from 'axios'
 import { Configuration, OpenAIApi } from 'openai';
-import { env } from 'process';
 
 
 
 const configuration = new Configuration({
-    apiKey: env.OPEN_AI_API_KEY,
+    apiKey: process.env.OPEN_AI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
 // const fetchSummonerId = async (name) => {
 //     try {
-//         const response = await fetch(`https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${name}?api_key=${riotApiKey}`);
+//         const response = await axios.get(`https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${name}?api_key=${riotApiKey}`);
 //         const data = await response.json();
 //         return data.id;
 //     } catch (err) {
@@ -21,7 +20,7 @@ const openai = new OpenAIApi(configuration);
 
 const fetchListOfMatches = async () => {
     try {
-        const response = await fetch(`https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${env.PUUID}/ids?type=ranked&start=0&count=1&api_key=${env.RIOT_API_KEY}`)
+        const response = await axios.get(`https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${process.env.PUUID}/ids?type=ranked&start=0&count=1&api_key=${process.env.RIOT_API_KEY}`)
         const data = await response.json();
         return data;
     } catch (err) {
@@ -31,7 +30,7 @@ const fetchListOfMatches = async () => {
 
 const fetchMatchData = async (matchId) => {
     try {
-        const response = await fetch(`https://americas.api.riotgames.com/lol/match/v5/matches/${matchId}?api_key=${env.RIOT_API_KEY}`)
+        const response = await axios.get(`https://americas.api.riotgames.com/lol/match/v5/matches/${matchId}?api_key=${process.env.RIOT_API_KEY}`)
         const data = await response.json();
         return data;
     } catch (err) {
@@ -44,7 +43,7 @@ export const gatherMyMatchData = async () => {
     const listOfMatches = await fetchListOfMatches();
     for (const match of listOfMatches) {
         const matchData = await fetchMatchData(match);
-        const myParticipant = matchData.info.participants.find(p => p.puuid === env.PUUID);
+        const myParticipant = matchData.info.participants.find(p => p.puuid === process.env.PUUID);
         if (myParticipant) {
             aggregatedMatchData.push(myParticipant);
         }
